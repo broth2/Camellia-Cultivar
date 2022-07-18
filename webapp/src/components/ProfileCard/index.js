@@ -2,6 +2,17 @@ import React from 'react'
 import { IoPersonOutline, IoAtOutline, IoStarOutline } from 'react-icons/io5'
 import ProfileDetails from '../ProfileDetails'
 
+const getRep = (rep) =>{
+    var nRep = (Math.round((rep + Number.EPSILON) * 100) / 100).toString();
+    var title;
+    if (nRep<10) title="(Newbie)";
+    else if (nRep<20) title="(Recruit)";
+    else if (nRep<35) title="(Camellia Lover)"
+    else if (nRep<50) title="(Botany Expert)"
+    else title="(Garden Master)";
+    return (nRep).toString() +" " + title;
+}
+
 
 const ProfileCard = (props) => {
     return (
@@ -14,7 +25,7 @@ const ProfileCard = (props) => {
             <div className="mt-4 md:ml-6">
                 <ProfileDetails icon={<IoPersonOutline></IoPersonOutline>} id="profile-name" content={`${props.person.first_name} ${props.person.last_name}`}></ProfileDetails>
                 <ProfileDetails icon={<IoAtOutline></IoAtOutline>} id="profile-email" content={`${props.person.email}`}></ProfileDetails>
-                <ProfileDetails icon={<IoStarOutline></IoStarOutline>} id="profile-reputation" content={`${props.person.reputation}`}></ProfileDetails>
+                <ProfileDetails icon={<IoStarOutline></IoStarOutline>} id="profile-reputation" content={getRep(props.person.reputation)}></ProfileDetails>
             </div>
             <div className="flex flex-col">
                 <button onClick={() => { props.setIsEditing(true) }} className="p-3 bg-emerald-900 self-center text-xs md:text-base text-white rounded-full mt-8 md:mt-14 font-medium">

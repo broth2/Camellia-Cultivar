@@ -31,4 +31,8 @@ public class QuizAnswerDTO {
         return specimenId != null && answer != null;
     }
 
+    public String toString(){
+        return "ID:" + this.specimenId + ";" + "answer: " + this.answer+"\n";
+    }
+
 }

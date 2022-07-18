@@ -55,13 +55,21 @@ const Quizzes = () => {
 
     const submitQuiz = () => {
         let answersToQuiz = [];
-        for (let i = 0; i < answers.length; i++) {
-            answers[i] !== undefined && answersToQuiz.push({
-                specimen_id: quizArray[i].specimenId,
-                answer: answers[i]
+        var answers2 = answers;
+        for (let i = 0; i < answers2.length-3; i++) {
+            if(answers2[i] == undefined){
+                answers2[i] = 0;
+            }
+            answersToQuiz.push({
+                specimenId: quizArray[i].specimenId,
+                answer: answers2[i]
             })
+        console.log(answers2[i] + " -- " + quizArray[i].specimenId );
         }
         let user = JSON.parse(localStorage.getItem('userToken'));
+        for (let r = 0; r < answersToQuiz.length; r++){
+            console.log(answersToQuiz[r]);
+        }
         axios.post(`${proxy}/api/quizzes`, answersToQuiz, { headers: { Authorization: `Bearer ${user.loginToken}` } })
             .then((_response) => {
                 setQuizArray([]);

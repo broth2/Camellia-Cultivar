@@ -90,4 +90,9 @@ public class QuizAnswer {
     public Cultivar getCultivar() {
         return cultivar;
     }
+
+    public String toString(){
+        return "[id: " + this.id + ",correct:" + this.correct + ",specimentype" + this.specimenType.getCode() + 
+        ",user:"+ this.user.getEmail() + ",specimen(expected): " + this.specimen.getSpecimenId() + ",cultivar(answered): "+ this.cultivar.getId() + "]";
+    }
 }

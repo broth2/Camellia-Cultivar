@@ -1,7 +1,6 @@
 package com.camellia.models.users;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,7 +21,6 @@ import lombok.NoArgsConstructor;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.hibernate.mapping.Collection;
 
 
 @Entity
@@ -39,7 +37,7 @@ public class User implements Serializable{
         strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
         parameters = {
                     @Parameter(name = "sequence_name", value = "userssequence"),
-                    @Parameter(name = "initial_value", value = "2"),
+                    @Parameter(name = "initial_value", value = "6"),
                     @Parameter(name = "increment_size", value = "1")
         }
     )
@@ -304,4 +302,15 @@ public class User implements Serializable{
             ", " + "\"auto_approval\":" + getAutoApproval()  +
             "}";
         }
+    
+    public String toString(){
+        return "{" + "\"profile_image\":\"" + getProfilePhoto() +
+            "\", " + "\"first_name\":\""  +  getFirstName() +
+            "\", " + "\"last_name\":\"" + getLastName() +
+            "\", " + "\"email\":\"" + getEmail() +
+            "\", " + "\"reputation\":" + getReputation()+
+            ", " + "\"verified\":" + getVerified() +
+            ", " + "\"auto_approval\":" + getAutoApproval()  +
+            "}";
+    }
 }
