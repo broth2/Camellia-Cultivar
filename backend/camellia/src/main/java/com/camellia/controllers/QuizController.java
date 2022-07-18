@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,7 +45,7 @@ public class QuizController {
 
 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> quizSubmission(@RequestBody List<QuizAnswerDTO> answersList) throws MailException, UnsupportedEncodingException, MessagingException{
+    public ResponseEntity<String> quizSubmission(@RequestBody List<QuizAnswerDTO> answersList) throws UnsupportedEncodingException, MessagingException{
         Optional<User> optionalRequester = userService.getUserFromRequestIfRegistered();
         if(optionalRequester.isEmpty())
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);

@@ -13,9 +13,6 @@ import com.camellia.services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.mail.MailException;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +21,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 
 @Service
 public class ToIdentifySpecimenService {
@@ -33,9 +29,6 @@ public class ToIdentifySpecimenService {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private JavaMailSender mailSender;
 
     @Autowired
     private EmailService emailService;
@@ -62,13 +55,13 @@ public class ToIdentifySpecimenService {
         );
     }
 
-    public SpecimenDto promoteToReferenceFromId(long id, Cultivar c) throws MailException, UnsupportedEncodingException, MessagingException {
+    public SpecimenDto promoteToReferenceFromId(long id, Cultivar c) throws UnsupportedEncodingException, MessagingException {
         Specimen promotingSpecimen = this.getToIdentifySpecimenById(id);
         return promoteToReference(promotingSpecimen, c);
     }
 
 
-    public SpecimenDto promoteToReference(Specimen promotingSpecimen, Cultivar c) throws MailException, UnsupportedEncodingException, MessagingException {
+    public SpecimenDto promoteToReference(Specimen promotingSpecimen, Cultivar c) throws UnsupportedEncodingException, MessagingException {
         if (promotingSpecimen == null)
             return null;
 
@@ -94,27 +87,16 @@ public class ToIdentifySpecimenService {
 
 
     private void sendSpecimneIdentifiedEmail(Specimen s)
-        throws MailException, UnsupportedEncodingException, MessagingException {
+        throws UnsupportedEncodingException, MessagingException {
        
         User user = userService.getUserById( specimenRepository.findUserById(s.getSpecimenId()) );
 
         String toAddress = user.getEmail();
-        String fromAddress = "camelliacultivar@gmail.com";
-        String senderName = "Cammelia Cultivar";
         String subject = "Specimen Identified";
         String content = "Dear user,"
                 + "One of your specimens (ID:" + s.getSpecimenId() + ") has been identified as "+s.getCultivar()+". Get back on the app to check it.<br>"
                 + "Thank you,<br>"
                 + "Cammelia Cultivar";
-        
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
-        
-        helper.setFrom(fromAddress, senderName);
-        helper.setTo(toAddress);
-        helper.setSubject(subject);
-                        
-        helper.setText(content, true);
         
         //mailSender.send(message);
         Email e = new Email(EmailConsts.OUR_EMAIL , toAddress);

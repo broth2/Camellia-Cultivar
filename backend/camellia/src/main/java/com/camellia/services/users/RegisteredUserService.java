@@ -4,8 +4,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 
+import com.camellia.mail.Email;
+import com.camellia.mail.EmailConsts;
+import com.camellia.mail.EmailService;
 import com.camellia.models.users.RegisteredUser;
 import com.camellia.repositories.users.RegisteredUserRepository;
 
@@ -15,9 +17,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailException;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,9 +33,9 @@ public class RegisteredUserService {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    private JavaMailSender mailSender;
+    private EmailService emailService;
 
-    public ResponseEntity<String> addRegisteredUser( RegisteredUser user, String siteUrl) throws MailException, UnsupportedEncodingException, MessagingException{
+    public ResponseEntity<String> addRegisteredUser( RegisteredUser user, String siteUrl) throws UnsupportedEncodingException, MessagingException{
         if( user.getFirstName().isEmpty() || user.getLastName().isEmpty() 
                     || user.getPassword().isEmpty() || user.getEmail().isEmpty())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid user data");
@@ -101,11 +100,9 @@ public class RegisteredUserService {
     }
 
     private void sendRegistrationEmail(RegisteredUser user, String siteURL)
-        throws MailException, UnsupportedEncodingException, MessagingException {
+        throws UnsupportedEncodingException, MessagingException {
        
         String toAddress = user.getEmail();
-        String fromAddress = "camelliacultivar@gmail.com";
-        String senderName = "Cammelia Cultivar";
         String subject = "Please verify your registration";
         String content = "Dear [[name]],<br>"
                 + "Please click the link below to verify your registration:<br>"
@@ -113,21 +110,22 @@ public class RegisteredUserService {
                 + "Thank you,<br>"
                 + "Cammelia Cultivar";
         
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
-        
-        helper.setFrom(fromAddress, senderName);
-        helper.setTo(toAddress);
-        helper.setSubject(subject);
-        
         content = content.replace("[[name]]", user.getFirstName().concat(" ").concat(user.getLastName()));
         String verifyURL = siteURL + "/api/users/verify?code=" + user.getVerificationCode();
         
         content = content.replace("[[URL]]", verifyURL);
         
-        helper.setText(content, true);
-        
-        mailSender.send(message);
-        
+        //mailSender.send(message);
+
+        System.out.println("\n\n\n\nRegistering user..." );
+        Email e = new Email(EmailConsts.OUR_EMAIL , toAddress);
+        e.setSubject(subject);
+        e.setText(content);
+
+        if(emailService.send(e)){
+            System.out.printf("\nMail Sent with success!\n");
+        }else{
+            System.out.println("ERROR sending mail!");
+        }
     }
 }

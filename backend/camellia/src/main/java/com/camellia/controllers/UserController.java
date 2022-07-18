@@ -17,7 +17,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +30,7 @@ public class UserController {
     private RegisteredUserService registeredUserService;
 
     @PostMapping(value="/signup", consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> createUser(@Valid @RequestBody RegisteredUser user, HttpServletRequest request) throws MailException, UnsupportedEncodingException, MessagingException{
+    public ResponseEntity<String> createUser(@Valid @RequestBody RegisteredUser user, HttpServletRequest request) throws UnsupportedEncodingException, MessagingException{
         return registeredUserService.addRegisteredUser(user, getSiteURL(request));
     }
 
@@ -40,6 +39,11 @@ public class UserController {
         if(checkRoleRegistered())
             return userService.getUserProfile(id);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<String> getAllUsers(){
+        return userService.getAllUsers();
     }
 
     @PutMapping(value="/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE})

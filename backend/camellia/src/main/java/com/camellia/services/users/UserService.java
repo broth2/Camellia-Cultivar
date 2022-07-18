@@ -40,6 +40,10 @@ public class UserService {
         }
     }
 
+    public ResponseEntity<String> getAllUsers(){
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(this.repository.findAll().toString());
+    }
+
 
     public ResponseEntity<String> editProfile(User tempUser, long id){
         if( tempUser.getFirstName().isEmpty() && tempUser.getLastName().isEmpty() 

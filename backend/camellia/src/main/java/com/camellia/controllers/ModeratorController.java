@@ -21,7 +21,6 @@ import javax.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -91,7 +90,7 @@ public class ModeratorController {
     }
 
     @PutMapping("/specimen/promote/{id}")
-    public ResponseEntity<SpecimenDto> promoteToReferenceSpecimen(@PathVariable Long id, @RequestParam(value="cultivar") Long cultivarId) throws MailException, UnsupportedEncodingException, MessagingException {
+    public ResponseEntity<SpecimenDto> promoteToReferenceSpecimen(@PathVariable Long id, @RequestParam(value="cultivar") Long cultivarId) throws UnsupportedEncodingException, MessagingException {
         if(checkRole())
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(toIdentifySpecimenService.promoteToReferenceFromId(id, cultivarService.getCultivarById(cultivarId)));
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
