@@ -15,7 +15,7 @@ services:
 
     server:
         build:
-            context: ./camellia
+            context: ./backend/camellia
             dockerfile: Dockerfile
         restart: on-failure
         ports:
@@ -28,6 +28,17 @@ services:
             - SPRING_DATASOURCE_USERNAME=camellia
             - SPRING_DATASOURCE_PASSWORD=password
             #- SPRING_JPA_HIBERNATE_DDL_AUTO=update  
+
+    webapp:
+        build: ./webapp
+        container_name: webapp_container
+        ports:
+            - '3000:3000'
+        volumes:
+            - ./webapp:/app
+            - ./app/node_modules
+        stdin_open: true
+        # tty: true
 
 #docker exec -it [container id] bash
 #psql -h localhost -p 5432 -d camellia-cultivar -U camellia -W

@@ -15,3 +15,6 @@ Backend API availble on *https://localhost:8085*
 ## Changes made
 - Reputation improvements
 - Emailing service changed and diversified the type of notifications
+- Reputation tiers represented in user profile
+- Both backend and frontend are in docker containers
+- Twitter bot for camellia confirmation and milestone accomplishments

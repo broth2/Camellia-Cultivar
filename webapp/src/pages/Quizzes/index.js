@@ -57,7 +57,7 @@ const Quizzes = () => {
         let answersToQuiz = [];
         var answers2 = answers;
         for (let i = 0; i < answers2.length-3; i++) {
-            if(answers2[i] == undefined){
+            if(answers2[i] === undefined){
                 answers2[i] = 0;
             }
             answersToQuiz.push({

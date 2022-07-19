@@ -1,8 +1,8 @@
-cd camellia/
+cd backend/camellia/
 
 mvn package
 
-cd ..
+cd ../..
 
 docker-compose rm -f
 docker-compose pull
