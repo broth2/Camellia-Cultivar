@@ -145,10 +145,15 @@ public class QuizService {
                 //maybe promote to approval instead
                 toIdentifySpecimenService.promoteToReference(specimen, highProbabilityCultivar.get());
                 //after or instead of mod approval, improve and decrease rep acordingly
-                for(User correctUser :repository.getUsersFromCultivar(specimen, highProbabilityCultivar.get())){
+                List<User> correctUsers = repository.getUsersFromCultivar(specimen, highProbabilityCultivar.get());
+                for(User quizzUser :repository.getUsersFromSpecimen(specimen)){
                     //notify
-                    updateUserRep(correctUser, probableCultivars.get(highProbabilityCultivar.get()));
-                    notifyUser(correctUser, specimen,highProbabilityCultivar.get() );
+                    if (correctUsers.contains(quizzUser)){
+                        updateUserRep(quizzUser, probableCultivars.get(highProbabilityCultivar.get()));
+                        notifyUser(quizzUser, specimen,highProbabilityCultivar.get() );
+                    }else{
+                        removeUserRep(quizzUser, probableCultivars.get(highProbabilityCultivar.get()));
+                    }
                 }
             } catch (UnsupportedEncodingException | MessagingException e) {
                 throw new RuntimeException(e);
@@ -187,6 +192,17 @@ public class QuizService {
         System.out.println("final rep:" +rep);
         userService.saveReputation(user, user.getReputation() + rep);
 
+    }
+
+    private void removeUserRep(User user, Double cultivarCertanty){
+        double currentRep = user.getReputation();
+        double e = 2.72;
+        double baseAmmount = Math.pow(e, -currentRep/12)*15 + 3;
+        //popularity penalty ammount
+        double penalty = cultivarCertanty/40;
+        double rep = baseAmmount/penalty;
+        System.out.println("final rep:" +rep);
+        userService.saveReputation(user, user.getReputation() - rep/5);
     }
 
     private void notifyUser(User usr, Specimen spcmn, Cultivar cltvr){

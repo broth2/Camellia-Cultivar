@@ -36,6 +36,9 @@ public interface QuizRepository extends JpaRepository<QuizAnswer, Long>{
     @Query(value = "SELECT a.user FROM QuizAnswer a WHERE a.specimen = :specimen AND a.cultivar = :cultivar")
     List<User> getUsersFromCultivar(@Param("specimen") Specimen specimen, @Param("cultivar") Cultivar cultivar);
 
+    @Query(value = "SELECT a.user FROM QuizAnswer a WHERE a.specimen = :specimen")
+    List<User> getUsersFromSpecimen(@Param("specimen") Specimen specimen);
+
 //    @Query(value = "SELECT COUNT(*) FROM quiz_answer WHERE user_id = :user_id AND specimen_type = \'TOIDENTIFY\'", nativeQuery = true )
     @Query(value =
             "SELECT COUNT(a) FROM QuizAnswer a " +
