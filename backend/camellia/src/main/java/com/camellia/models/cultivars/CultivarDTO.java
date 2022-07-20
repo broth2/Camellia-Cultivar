@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
-import com.camellia.models.characteristics.CharacteristicValue;
 import com.camellia.models.characteristics.CharacteristicValueDTO;
 import com.camellia.models.specimens.Specimen;
 import lombok.Data;

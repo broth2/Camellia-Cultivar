@@ -1,7 +1,5 @@
 package com.camellia.models.users;
 
-
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 

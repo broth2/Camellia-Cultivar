@@ -33,4 +33,8 @@ public class SpecimenQuizDTO {
         this.photographs = photographs;
     }
 
+    public String toString(){
+        return "[Specimen ID:" + this.specimenId + "]";
+    }
+
 }

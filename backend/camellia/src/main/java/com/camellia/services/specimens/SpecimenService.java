@@ -106,29 +106,26 @@ public class SpecimenService {
         idsReference.removeAll(tempList);
         idsToIdentify.removeAll(tempList);
 
-
-        if( idsReference.size() < noReferenceSpecimens ||  idsToIdentify.size() < noToIdentifySpecimens)
-            return specimens;
-
         int refCounter = 0;
         int toIdenCounter = 0;
         int entryId;
         Optional<Specimen> entry;
 
 
-        
-        while(refCounter < noReferenceSpecimens ){
-            entryId =  this.r.nextInt(idsReference.size());
+        if( idsReference.size()>= noReferenceSpecimens){        
+            while(refCounter < noReferenceSpecimens ){
+                entryId =  this.r.nextInt(idsReference.size());
 
 
-            entry = specimenRepository.findById(idsReference.get(entryId));
+                entry = specimenRepository.findById(idsReference.get(entryId));
 
-            if(entry.isPresent()){
+                if(entry.isPresent()){
 
-                refCounter++;
+                    refCounter++;
 
-                idsReference.remove(entryId);
-                specimens.add( new SpecimenQuizDTO(entry.get() ) );
+                    idsReference.remove(entryId);
+                    specimens.add( new SpecimenQuizDTO(entry.get() ) );
+                }
             }
         }
 
@@ -145,7 +142,7 @@ public class SpecimenService {
                 specimens.add( new SpecimenQuizDTO(entry.get() ) );
             }
         }
-
+        System.out.println("Specimens: "+ specimens);
         return specimens;
     }
     public Long getSpecimenPhotosCount() {return specimenRepository.countAllPhotos();}

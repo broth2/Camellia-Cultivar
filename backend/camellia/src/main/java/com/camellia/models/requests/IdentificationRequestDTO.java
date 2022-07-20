@@ -2,9 +2,7 @@ package com.camellia.models.requests;
 
 import com.camellia.models.specimens.SpecimenDto;
 import com.camellia.models.users.UserDTO;
-import lombok.Data;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
