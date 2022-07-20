@@ -13,6 +13,8 @@ import com.camellia.models.users.User;
 import com.camellia.services.QuizService;
 import com.camellia.services.users.UserService;
 
+import twitter4j.TwitterException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -45,7 +47,7 @@ public class QuizController {
 
 
     @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> quizSubmission(@RequestBody List<QuizAnswerDTO> answersList) throws UnsupportedEncodingException, MessagingException{
+    public ResponseEntity<String> quizSubmission(@RequestBody List<QuizAnswerDTO> answersList) throws UnsupportedEncodingException, MessagingException, TwitterException{
         Optional<User> optionalRequester = userService.getUserFromRequestIfRegistered();
         if(optionalRequester.isEmpty())
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);

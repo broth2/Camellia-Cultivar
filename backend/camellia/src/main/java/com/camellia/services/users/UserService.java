@@ -4,6 +4,10 @@ import com.camellia.models.users.User;
 import com.camellia.repositories.users.UserRepository;
 import com.camellia.services.RoleService;
 
+import twitter4j.Twitter;
+import twitter4j.TwitterFactory;
+import twitter4j.TwitterException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -85,7 +89,7 @@ public class UserService {
     }
 
 
-    public boolean verify(String verificationCode) {
+    public boolean verify(String verificationCode) throws TwitterException {
         User user = repository.findByVerificationCode(verificationCode);
          
         if (user == null || user.isVerified()) {
@@ -95,9 +99,29 @@ public class UserService {
             user.setVerified(true);
             user.addRole(roleService.getRoleByName("REGISTERED"));
             repository.save(user);
+
+            checkIfUserMilestone();
              
             return true;
         } 
+    }
+
+    public void checkIfUserMilestone() throws TwitterException{
+        long userCount = repository.count();
+        boolean sendTweet = false;
+
+        // sends tweet every 100 users, until 1000 users are reached, after
+        // sends tweet every 1000 users
+        if(userCount<1001 && userCount%100==0) sendTweet = true;
+        else if (userCount>=1001 && userCount%1000==0) sendTweet = true;
+
+        if(sendTweet){
+            TwitterFactory tf = new TwitterFactory();
+            Twitter twitter = tf.getInstance();
+
+            twitter.updateStatus("Thanks to the community, we have reached " + userCount + " registered users!");
+            sendTweet=false;
+        }
     }
 
     public Long getUserCount() {

@@ -11,6 +11,9 @@ import com.camellia.models.users.User;
 import com.camellia.services.requests.IdentificationRequestService;
 import com.camellia.services.specimens.SpecimenService;
 import com.camellia.services.users.UserService;
+
+import twitter4j.TwitterException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,7 +66,7 @@ public class RequestController {
     @PostMapping("/identification")
     public ResponseEntity<IdentificationRequestDTO> createSpecimen(
             @RequestBody SpecimenDto specimenDto
-    ) {
+    ) throws TwitterException {
         boolean requesterHasAutoApproval;
         try {
             requesterHasAutoApproval = userService.requesterHasAutoApproval();

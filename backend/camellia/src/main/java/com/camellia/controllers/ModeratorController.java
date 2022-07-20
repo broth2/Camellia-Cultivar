@@ -14,6 +14,8 @@ import com.camellia.services.specimens.SpecimenService;
 import com.camellia.services.specimens.ToIdentifySpecimenService;
 import com.camellia.services.users.UserService;
 
+import twitter4j.TwitterException;
+
 import java.io.UnsupportedEncodingException;
 
 import javax.mail.MessagingException;
@@ -90,7 +92,7 @@ public class ModeratorController {
     }
 
     @PutMapping("/specimen/promote/{id}")
-    public ResponseEntity<SpecimenDto> promoteToReferenceSpecimen(@PathVariable Long id, @RequestParam(value="cultivar") Long cultivarId) throws UnsupportedEncodingException, MessagingException {
+    public ResponseEntity<SpecimenDto> promoteToReferenceSpecimen(@PathVariable Long id, @RequestParam(value="cultivar") Long cultivarId) throws UnsupportedEncodingException, MessagingException, TwitterException {
         if(checkRole())
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(toIdentifySpecimenService.promoteToReferenceFromId(id, cultivarService.getCultivarById(cultivarId)));
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);

@@ -6,4 +6,4 @@ cd ../..
 
 docker-compose rm -f
 docker-compose pull
-docker-compose up --build
+COMPOSE_HTTP_TIMEOUT=180 docker-compose up --build

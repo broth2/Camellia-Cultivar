@@ -8,6 +8,10 @@ import com.camellia.models.specimens.SpecimenQuizDTO;
 import com.camellia.services.characteristics.CharacteristicValueService;
 import com.camellia.services.users.UserService;
 
+import twitter4j.Twitter;
+import twitter4j.TwitterFactory;
+import twitter4j.TwitterException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +52,7 @@ public class SpecimenService {
         return specimenRepository.findById(id);
     }
 
-    public Specimen saveSpecimen(Specimen specimen){
+    public Specimen saveSpecimen(Specimen specimen) throws TwitterException{
         try {
             System.out.println("specimen's characteristics: " + specimen.getCharacteristicValues());
             Set<CharacteristicValue> values = specimen.getCharacteristicValues().stream()
@@ -64,7 +68,20 @@ public class SpecimenService {
             specimen.setCharacteristicValues(new HashSet<>());
             logger.warn("Found no characteristics in passed specimen");
         }
+        checkIfSpecimenMilestone();
         return specimenRepository.saveAndFlush(specimen);
+    }
+
+    private void checkIfSpecimenMilestone() throws TwitterException{
+        long specimenCount = specimenRepository.count();
+
+        // sends a tweet every 100 new identification requests
+        if (specimenCount%100==0){
+            TwitterFactory tf = new TwitterFactory();
+            Twitter twitter = tf.getInstance();
+
+            twitter.updateStatus("Thanks to the community, we have reached " + specimenCount + " specimen identification requests!");
+        }
     }
 
     public String deleteSpecimen(long id) {

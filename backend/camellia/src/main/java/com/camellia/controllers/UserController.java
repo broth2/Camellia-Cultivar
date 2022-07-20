@@ -11,6 +11,8 @@ import com.camellia.models.users.User;
 import com.camellia.services.users.RegisteredUserService;
 import com.camellia.services.users.UserService;
 
+import twitter4j.TwitterException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.repository.query.Param;
@@ -69,7 +71,7 @@ public class UserController {
 
 
     @GetMapping(value="/verify")
-    public String verifyUser(@Param("code") String code) {
+    public String verifyUser(@Param("code") String code)  throws TwitterException{
         if (userService.verify(code)) {
             return "<html>\n" + "<header><title>Camellia Account Verification</title></header>\n" +
             "<body>\n" + "<h1> Account Verified </h1>\n" + "<a href=\"" + homepage + "\">Go to the home page</a>" + "</body>\n" + "</html>";

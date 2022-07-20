@@ -10,6 +10,10 @@ import com.camellia.models.users.User;
 import com.camellia.repositories.specimens.SpecimenRepository;
 import com.camellia.services.users.UserService;
 
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -55,13 +59,13 @@ public class ToIdentifySpecimenService {
         );
     }
 
-    public SpecimenDto promoteToReferenceFromId(long id, Cultivar c) throws UnsupportedEncodingException, MessagingException {
+    public SpecimenDto promoteToReferenceFromId(long id, Cultivar c) throws UnsupportedEncodingException, MessagingException, TwitterException {
         Specimen promotingSpecimen = this.getToIdentifySpecimenById(id);
         return promoteToReference(promotingSpecimen, c);
     }
 
 
-    public SpecimenDto promoteToReference(Specimen promotingSpecimen, Cultivar c) throws UnsupportedEncodingException, MessagingException {
+    public SpecimenDto promoteToReference(Specimen promotingSpecimen, Cultivar c) throws UnsupportedEncodingException, MessagingException, TwitterException {
         if (promotingSpecimen == null)
             return null;
 
@@ -79,15 +83,15 @@ public class ToIdentifySpecimenService {
         specimenRepository.saveAndFlush(promotingSpecimen);
 
 
-        sendSpecimneIdentifiedEmail(promotingSpecimen);
+        sendSpecimenIdentificationNotifications(promotingSpecimen);
 
         return SpecimenMapper.MAPPER.specimenToSpecimenDTO(promotingSpecimen);
     }
 
 
 
-    private void sendSpecimneIdentifiedEmail(Specimen s)
-        throws UnsupportedEncodingException, MessagingException {
+    private void sendSpecimenIdentificationNotifications(Specimen s)
+        throws UnsupportedEncodingException, MessagingException, TwitterException {
        
         User user = userService.getUserById( specimenRepository.findUserById(s.getSpecimenId()) );
 
@@ -108,6 +112,12 @@ public class ToIdentifySpecimenService {
         }else{
             System.out.println("ERROR sending mail!");
         }
+
+        // sends a tweet when system considers specimen to be identified
+        TwitterFactory tf = new TwitterFactory();
+        Twitter twitter = tf.getInstance();
+
+        twitter.updateStatus("Specimen with ID " + s.getSpecimenId() + " has been identified by the community as " + s.getCultivar());
         
     }
 }

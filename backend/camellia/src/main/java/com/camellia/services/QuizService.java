@@ -6,6 +6,9 @@ import com.camellia.repositories.QuizRepository;
 import com.camellia.services.specimens.SpecimenService;
 import com.camellia.services.specimens.ToIdentifySpecimenService;
 import com.camellia.services.users.UserService;
+
+import twitter4j.TwitterException;
+
 import com.camellia.models.QuizAnswer;
 import com.camellia.models.QuizAnswerDTO;
 import com.camellia.models.cultivars.Cultivar;
@@ -83,7 +86,7 @@ public class QuizService {
     }
 
 
-    public ResponseEntity<String> saveQuizAnswers(User user, List<QuizAnswerDTO> quizAnswers) {
+    public ResponseEntity<String> saveQuizAnswers(User user, List<QuizAnswerDTO> quizAnswers) throws TwitterException{
 
         if(user == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid user");
@@ -91,13 +94,21 @@ public class QuizService {
         
         List<QuizAnswer> answers = repository.saveAllAndFlush(mapper.quizAnswerDTOsToQuizAnswers(quizAnswers, user));
 
-        System.out.println("------>\n" + answers);
-        answers.stream().filter(QuizAnswer::isToIdentify).forEach(this::calculateSpecimenProbabilities);
-
+        // reference quiz answers processing
         long numRefSpecimen=answers.stream().filter(QuizAnswer::isReference).count();
         long numCorrectRefSpecimenAnswers = answers.stream().filter(QuizAnswer::isReference).filter(QuizAnswer::getCorrect).count();
-
         calculateNewReputation(user, numRefSpecimen, numCorrectRefSpecimenAnswers);
+
+        System.out.println("------>\n" + answers);
+
+        // to identify quiz answers processing
+        answers.stream().filter(QuizAnswer::isToIdentify).forEach(t -> {
+            try {
+                calculateSpecimenProbabilities(t);
+            } catch (TwitterException e) {
+                e.printStackTrace();
+            }
+        });
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(user.getReputation() + "");
     }
@@ -105,14 +116,13 @@ public class QuizService {
     public void calculateNewReputation(User user, long refCount, long correctRef){
         if (correctRef==0) return;
         System.out.println("User got " + correctRef + " out of " + refCount  + " answers");
-        System.out.println("therefore, new rep is: " + Math.pow(correctRef, 1.49)/1.5);
-        System.out.println();
+        System.out.println("therefore, new rep is: " + Math.pow(correctRef, 1.49)/1.5 + "\n");
 
         
         userService.saveReputation(user, user.getReputation() + Math.pow(correctRef, 1.49)/1.5);
     }
 
-    private void calculateSpecimenProbabilities(QuizAnswer quizAnswer) {
+    private void calculateSpecimenProbabilities(QuizAnswer quizAnswer) throws TwitterException  {
         //associa no mapa interno do specimen, a cultivar respondida com a prob 0
         //vai buscar todas as cultivares que os users ja responderam
 
