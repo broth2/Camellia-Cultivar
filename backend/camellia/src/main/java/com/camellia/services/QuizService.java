@@ -217,11 +217,13 @@ public class QuizService {
 
     private void notifyUser(User usr, Specimen spcmn, Cultivar cltvr){
         String content = "Dear [[name]],<br>"
-                + "Your identification of the specimen "+ spcmn.getSpecimenId() +" with the cultivar "+ cltvr +" has been deemed correct by the community, congratulations!<br>"
-                + "Your Reputation will change accordingly, keep up the good work."
+                + "Your identification a specimen (ID:"+ spcmn.getSpecimenId() +") with the cultivar "
+                + cltvr +" has been deemed correct by the community, congratulations!<br>"
+                + "Your Reputation will change accordingly, keep up the good work.<br>"
                 + "Thank you,<br>"
                 + "Cammelia Cultivar";
         content = content.replace("[[name]]", usr.getFirstName().concat(" ").concat(usr.getLastName()));
+        
         Email e = new Email(EmailConsts.OUR_EMAIL , usr.getEmail());
         e.setSubject("A specimen you voted on was identified!");
         e.setText(content);

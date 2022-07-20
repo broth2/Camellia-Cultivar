@@ -97,8 +97,8 @@ public class ToIdentifySpecimenService {
 
         String toAddress = user.getEmail();
         String subject = "Specimen Identified";
-        String content = "Dear user,"
-                + "One of your specimens (ID:" + s.getSpecimenId() + ") has been identified as "+s.getCultivar()+". Get back on the app to check it.<br>"
+        String content = "Dear user,<br>"
+                + "One of your specimens (ID:" + s.getSpecimenId() + ") has been identified as "+s.getCultivar()+".<br>Get back on the app and check it out.<br>"
                 + "Thank you,<br>"
                 + "Cammelia Cultivar";
         

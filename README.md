@@ -11,6 +11,7 @@ cd ../webapp npm start
 
 Webapp available on *http://localhost:3000*  
 Backend API availble on *https://localhost:8085*
+Twitter page https://twitter.com/onthisdayalbum
 
 ## Changes made
 - Reputation algorithm improvements
