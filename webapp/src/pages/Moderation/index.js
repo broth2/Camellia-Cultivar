@@ -23,7 +23,7 @@ const Moderation = () => {
     const [characteristics, setCharacteristics] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [noRequests, setNoRequests] = useState(false);
-    const [noReports, setNoReports] = useState(false);
+    const [noReports, setNoReports] = useState(true);
     const [rDate, setrDate] = useState({});
     const [rTime, setrTime] = useState({});
     const [rCultivar, setrCultivar] = useState({});
@@ -45,7 +45,6 @@ const Moderation = () => {
         <img alt="" className=" rounded-full aspect-square object-cover h-[150px] w-[150px] md:h-[300px] md:w-[300px] border-4 border-emerald-900 self-center" src={person.profile_image} />
 
     useEffect(() => {
-        console.log("here");
         let userToken = localStorage.getItem("userToken");
         if (userToken) {
             const user = JSON.parse(userToken);
@@ -63,7 +62,6 @@ const Moderation = () => {
                     const rprtRespoonse = responses[1];
 
                     if (idResponse.data === "") {
-                        console.log("Gamz");
                         setNoRequests(true);
                         return;
                     }else{
@@ -75,10 +73,9 @@ const Moderation = () => {
                         setFetched(true);
                     }
 
-                    if (rprtRespoonse.data.submissionDate === null || rprtRespoonse.data === '') {
+                    if ( rprtRespoonse.data === '') {
                         console.log("no valid reports");
                         console.log(rprtRespoonse.data);
-                        setNoReports(true);
                         return;
                     }else{
                         var date_time = rprtRespoonse.data.submissionDate.split("T");
@@ -90,7 +87,6 @@ const Moderation = () => {
                         console.log("from cultivar: " + rprtRespoonse.data.cultivarN);
                         console.log("reason: " + rprtRespoonse.data.reportText);
                         //console.log("from user id: " + rprtRespoonse.data.regId);
-                        setFetched(true);
                         setrDate(date);
                         setrTime(time);
                         setrId(rprtRespoonse.data.request_id);
@@ -100,6 +96,7 @@ const Moderation = () => {
                         setrFname(rprtRespoonse.data.fname);
                         setrLname(rprtRespoonse.data.lname);
                         setrCid(rprtRespoonse.data.cultivarId);
+                        setNoReports(false);
                     }
                 })
                 )
@@ -211,6 +208,8 @@ const Moderation = () => {
                     'Authorization': 'Bearer ' + user.loginToken
                 }
             }
+            console.log(rId+":"+rCid);
+            console.log(options.headers);
             axios.delete(`${proxy}/api/moderator/report/accept/${rId}/${rCid}`, options)
                 .then(() => {
                     console.log("accepted report request(deleted report and cultivar)");
@@ -230,6 +229,7 @@ const Moderation = () => {
                     'Authorization': 'Bearer ' + user.loginToken
                 }
             }
+            console.log(rId);
             axios.delete(`${proxy}/api/moderator/report/refuse/${rId}`, options)
                 .then(() => {
                     console.log("deleted report request(refused)");

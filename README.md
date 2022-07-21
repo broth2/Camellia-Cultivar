@@ -17,7 +17,7 @@ Twitter page *https://twitter.com/onthisdayalbum*
 - Emailing service changed and diversified the type of notifications
 - Twitter bot for camellia confirmation and milestone accomplishments
 - Camellias can now be reported to admins/mods, in case the system misidentifies them
-- Admins/mods can refuse or accept the report request, removing the request or both the request and the camellia, respectivly
+- Admins/mods can refuse or accept the report request, removing the request or both the request and the camellia, respectively
 - Both backend and frontend are in docker containers
 - Set the docker-compose HTTP request timeout to a higher value
 - *Reference* quiz answers are processed before *To Identify* quiz answers
@@ -27,8 +27,8 @@ Twitter page *https://twitter.com/onthisdayalbum*
 - Made it so all cultivars and specimens that initialize the database have photos
 - Reference cultivares in quizzes refer to actual different cultivars
 - Removed useless imports and variables from backend
-- Removed Moderator reference in Requests, since it served no pourpose
-- Requests getters provide more varied information
+- Removed Moderator reference in Request Class, since it served no pourpose
+- Request's getters provide more varied and pertinent information
 - Report Request and Report Request DTO classes created
-- Delete cultivar endpoint created
-- API container now always restarts if it fails to connecto do DB(in case it boots before it)
+- Created an endpoint to delete cultivars
+- API container now always restarts if it fails to connect to DB(in case it boots before it)
