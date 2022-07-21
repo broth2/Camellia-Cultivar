@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import CamelliaCategory from '../../components/CamelliaCategory';
 import { BiImages } from "react-icons/bi";
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 import CharacteristicDropdown from '../../components/CharacteristicDropdown';
 import AnimateHeight from 'react-animate-height';
@@ -13,10 +14,14 @@ const Camellia = () => {
     const [camellia, setCamellia] = useState({});
     const [moreLoaded, setMoreLoaded] = useState(false);
     const [height, setHeight] = useState(0);
+    const [height2, setHeight2] = useState(0);
     const [fetched, setFetched] = useState(false);
     const [characteristics, setCharacteristics] = useState([]);
     const [otherPhotos, setOtherPhotos] = useState([]);
     const [otherPhotosExist, setOtherPhotosExist] = useState(false);
+    const [textBox, setTextBox] = useState(false);
+    const [answerText, setAnswerText] = useState("");
+    const isLogged = useSelector(state => state.isLogged)
 
 
 
@@ -58,6 +63,51 @@ const Camellia = () => {
         setHeight(
             height === 0 ? 'auto' : 0
         )
+    }
+
+    const loadMore2 = () => {
+        if(textBox===true){
+            setHeight2(0);
+            setTextBox(false);
+        }else{
+            setTimeout(() =>{
+            setHeight2('auto');
+            setTextBox(true);
+
+            }, 305)
+        }
+    }
+
+    const submitReport = () => {
+        let report ={
+            cultivarId: camellia.id,
+            reportText: answerText
+        }
+        let user = JSON.parse(localStorage.getItem('userToken'));
+        axios.post(`${proxy}/api/requests/report`, report, { headers: { Authorization: `Bearer ${user.loginToken}` } })
+            .then((_response) => {
+                if (_response.status === 201){
+                    loadMore2();
+                    setAnswerText("");
+                    console.log("reported successfuly");
+                }
+            })
+            .catch((_error) => {
+                return
+            })
+
+    }
+
+    const hndlC = event => {
+        setAnswerText(event.target.value);
+    
+        console.log('value is:', event.target.value);
+      };
+    
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            submitReport();
+        }
     }
 
 
@@ -118,7 +168,34 @@ const Camellia = () => {
                             }
                         
                     </AnimateHeight>
-
+                    {isLogged ?
+                        <button class="bg-red-700 text-white font-bold py-4 px-4 rounded-full hover:scale-105 mt-6" onClick={() => { loadMore2(); }}>
+                            Report
+                        </button>
+                        :
+                        console.log()
+                    }
+                    <AnimateHeight duration={500} height={height2}>
+                        {textBox?
+                        
+                        <div className="bg-emerald-900/20 rounded-full mt-4 p-8 md:py-2 md:px-6 ">
+                            <input id={"report_request_text"}
+                            className="block py-2 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none outline-none ring-0 focus:border-emerald-900 peer"
+                            placeholder=" " type="text"
+                            value={answerText}
+                            onChange={hndlC}
+                            onKeyDown={handleKeyDown}
+                        />
+                        <label
+                            className="cursor-text peer-focus:cursor-auto absolute text-sm text-gray-500 font-medium duration-300 scale-75 -translate-y-5 transform top-2.5 origin-[0] peer-focus:text-emerald-900 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-5"
+                        >Report details
+                        </label>
+                        </div>
+                            :
+                            console.log()    
+                        }
+                        
+                    </AnimateHeight>
                 </div>
             </div>
 

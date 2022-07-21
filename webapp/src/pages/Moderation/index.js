@@ -23,6 +23,17 @@ const Moderation = () => {
     const [characteristics, setCharacteristics] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [noRequests, setNoRequests] = useState(false);
+    const [noReports, setNoReports] = useState(false);
+    const [rDate, setrDate] = useState({});
+    const [rTime, setrTime] = useState({});
+    const [rCultivar, setrCultivar] = useState({});
+    const [rText, setrText] = useState({});
+    const [rId, setrId] = useState({});
+    //const [rUser, setrUser] = useState({});
+    const [rFname, setrFname] = useState({});
+    const [rLname, setrLname] = useState({});
+    const [rCid, setrCid] = useState({});
+
 
 
 
@@ -34,6 +45,7 @@ const Moderation = () => {
         <img alt="" className=" rounded-full aspect-square object-cover h-[150px] w-[150px] md:h-[300px] md:w-[300px] border-4 border-emerald-900 self-center" src={person.profile_image} />
 
     useEffect(() => {
+        console.log("here");
         let userToken = localStorage.getItem("userToken");
         if (userToken) {
             const user = JSON.parse(userToken);
@@ -42,19 +54,55 @@ const Moderation = () => {
                     'Authorization': 'Bearer ' + user.loginToken
                 }
             }
-            !fetched && axios.get(`${proxy}/api/moderator/identification`, options)
-                .then(response => {
-                    if (response.data === "") {
+            const identificationRequest = axios.get(`${proxy}/api/moderator/identification`, options);
+            const reportRequest = axios.get(`${proxy}/api/moderator/report`, options);
+
+            !fetched && axios.all([identificationRequest, reportRequest])
+                .then(axios.spread((...responses) =>{
+                    const idResponse = responses[0];
+                    const rprtRespoonse = responses[1];
+
+                    if (idResponse.data === "") {
+                        console.log("Gamz");
                         setNoRequests(true);
                         return;
+                    }else{
+                        setRequest(idResponse.data);
+                        setSubmitter(idResponse.data.submitter);
+                        setSpecimen(idResponse.data.toIdentifySpecimen);
+                        setPhotos(idResponse.data.toIdentifySpecimen.photos);
+                        setCharacteristics(idResponse.data.toIdentifySpecimen.characteristicValues);
+                        setFetched(true);
                     }
-                    setRequest(response.data);
-                    setSubmitter(response.data.submitter);
-                    setSpecimen(response.data.toIdentifySpecimen);
-                    setPhotos(response.data.toIdentifySpecimen.photos);
-                    setCharacteristics(response.data.toIdentifySpecimen.characteristicValues);
-                    setFetched(true);
+
+                    if (rprtRespoonse.data.submissionDate === null || rprtRespoonse.data === '') {
+                        console.log("no valid reports");
+                        console.log(rprtRespoonse.data);
+                        setNoReports(true);
+                        return;
+                    }else{
+                        var date_time = rprtRespoonse.data.submissionDate.split("T");
+                        var date = date_time[0];
+                        var time = date_time[1].split(".")[0];
+                        console.log("request id: " + rprtRespoonse.data.request_id);
+                        console.log("date: " + date);
+                        console.log("time: " + time);
+                        console.log("from cultivar: " + rprtRespoonse.data.cultivarN);
+                        console.log("reason: " + rprtRespoonse.data.reportText);
+                        //console.log("from user id: " + rprtRespoonse.data.regId);
+                        setFetched(true);
+                        setrDate(date);
+                        setrTime(time);
+                        setrId(rprtRespoonse.data.request_id);
+                        setrCultivar(rprtRespoonse.data.cultivarN);
+                        //setrUser(rprtRespoonse.data.regId);
+                        setrText(rprtRespoonse.data.reportText);
+                        setrFname(rprtRespoonse.data.fname);
+                        setrLname(rprtRespoonse.data.lname);
+                        setrCid(rprtRespoonse.data.cultivarId);
+                    }
                 })
+                )
         }
     });
 
@@ -76,6 +124,9 @@ const Moderation = () => {
                         setFetched(false);
                         setTimeout(() => setIsLoading(false), 500);
                     }
+                })
+                .catch(_err => {
+                    console.log(_err);
                 })
         }
     }
@@ -139,6 +190,7 @@ const Moderation = () => {
                     setTimeout(() => setIsLoading(false), 500);
                 })
                 .catch(_err => {
+                    console.log(_err);
                     return;
                 })
         }
@@ -148,6 +200,46 @@ const Moderation = () => {
         document.getElementById(`moderation-camellia-image-${currentPhoto}`).classList.remove("current");
         setCurrentPhoto(index);
         document.getElementById(`moderation-camellia-image-${index}`).classList.add("current");
+    }
+
+    const acceptReportRequest = () => {
+        const userToken = localStorage.getItem("userToken");
+        if (userToken) {
+            const user = JSON.parse(userToken);
+            const options = {
+                headers: {
+                    'Authorization': 'Bearer ' + user.loginToken
+                }
+            }
+            axios.delete(`${proxy}/api/moderator/report/accept/${rId}/${rCid}`, options)
+                .then(() => {
+                    console.log("accepted report request(deleted report and cultivar)");
+                })
+                .catch(_err => {
+                    console.log(_err);
+                    return;
+                })
+        }
+    }
+    const deleteReportRequest = () => {
+        const userToken = localStorage.getItem("userToken");
+        if (userToken) {
+            const user = JSON.parse(userToken);
+            const options = {
+                headers: {
+                    'Authorization': 'Bearer ' + user.loginToken
+                }
+            }
+            axios.delete(`${proxy}/api/moderator/report/refuse/${rId}`, options)
+                .then(() => {
+                    console.log("deleted report request(refused)");
+                })
+                .catch(_err => {
+                    console.log(_err);
+                    console.log(proxy);
+                    return;
+                })
+        }
     }
 
     return (
@@ -270,6 +362,37 @@ const Moderation = () => {
 
                     </div>
                 </div>
+            }
+            <div>
+                <p className=" text-xl md:text-3xl font-bold text-emerald-900 md:py-4 ">Reports <span className="sm:hidden"><br></br></span></p>
+            </div>
+            {noReports &&
+                <p className=" text-xl md:text-3xl font-bold text-emerald-900 text-center mt-16">No reports pending</p>
+            }{!noReports &&
+            <div className="bg-emerald-900/5 rounded-lg p-4 md:py-4 md:px-6 ">
+                        <div className="flex flex-col md:flex-row rounded-lg py-4 items-center">
+                            <p className="text-lg font-medium mr-4"></p>
+                            <div className="rounded-md bg-emerald-900 flex items-center px-2 py-2 cursor-pointer">
+                                <img alt="" src="/user.png" className="aspect-square max-h-10 invert mx-1"></img>
+                                <p className="text-white font-medium mx-1">{rFname} {rLname}</p>
+                            </div>
+                             <p className="text-lg px-6 font-medium mr-4">at {rTime} of {rDate} </p> 
+                        </div>
+                        <div className="flex flex-col md:flex-row rounded-lg py-4 items-center px-4">
+                            <p className="text-lg font-medium mr-4">About <span className="text-lg font-extrabold text-emerald-900 font-medium mr-4">{rCultivar}</span></p>
+                        </div>
+                        <div className="bg-emerald-900/5 rounded-lg p-4 md:py-4 md:px-6 ">{rText}</div>
+                        <div className="flex flex-col sm:flex-row justify-center items-center mt-2">
+                                    <div 
+                                    onClick={()=>deleteReportRequest()}
+                                    className=" bg-red-600 py-1 px-2 mx-4 my-2 rounded-md flex items-center cursor-pointer text-white text-lg"
+                                    ><IoClose></IoClose>Refuse</div>
+                                    <div
+                                        onClick={() => acceptReportRequest()}
+                                        className="bg-emerald-500 py-1 px-2 mx-4 my-2 rounded-md flex items-center cursor-pointer text-white text-lg"
+                                        ><IoCheckmark></IoCheckmark> Accept</div>
+                        </div>
+            </div>
             }
         </div>
     )

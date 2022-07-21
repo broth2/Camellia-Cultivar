@@ -5,8 +5,8 @@ import com.camellia.repositories.users.UserRepository;
 import com.camellia.models.requests.ReportRequest;
 import com.camellia.models.requests.ReportRequestDTO;
 import com.camellia.models.users.User;
+import com.camellia.services.cultivars.CultivarService;
 
-import com.camellia.services.specimens.ToIdentifySpecimenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -26,7 +26,7 @@ public class ReportRequestService {
     private UserRepository userRepository;
 
     @Autowired
-    private ToIdentifySpecimenService specimenService;
+    private CultivarService cultivarService;
 
     public Page<ReportRequest> getReportRequests(Pageable pageable) {
         return repository.findAll(pageable);
@@ -40,26 +40,26 @@ public class ReportRequestService {
         return repository.findById(id);
     }
 
-    public void createReportRequest(long specimenId ){
+    public void createReportRequest(ReportRequestDTO repRequest ){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User submittedBy = userRepository.findByEmail( auth.getName() );
 
         ReportRequest rq = new ReportRequest();
         rq.setSubmissionDate(LocalDateTime.now());
         rq.setRegUser(submittedBy);
-        rq.setTo_identify_specimen(specimenService.getToIdentifySpecimenById(specimenId));
-
-        
+        rq.setCultivar(cultivarService.getCultivarById(repRequest.getCultivarId()));
+        rq.setReportText(repRequest.getReportText());
+        System.out.println("report saved: " + rq);
         repository.save(rq);
     }
 
     public String deleteReportRequest(long requestId){
         repository.delete(repository.findById(requestId));
 
-        return "Specimen Deleted";
+        return "Report request Deleted";
     }
 
-    public ReportRequestDTO getOneRequest(){
-        return new ReportRequestDTO(repository.findTopByOrderBySubmissionDate());
+    public ReportRequest getOneRequest(){
+        return repository.findTopByOrderBySubmissionDate();
     }
 }

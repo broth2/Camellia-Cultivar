@@ -17,7 +17,7 @@ services:
         build:
             context: ./backend/camellia
             dockerfile: Dockerfile
-        restart: on-failure
+        restart: always
         ports:
             - '8085:8085'
         depends_on:

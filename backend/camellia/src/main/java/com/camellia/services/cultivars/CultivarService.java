@@ -59,6 +59,11 @@ public class CultivarService {
         return repository.findByEpithetStartsWithIgnoreCase(epithet);
     }
 
+    public String deleteCultivarById(long id){
+        repository.delete(repository.findById(id).get());
+        return "cultivar "+id+" deleted.";
+    }
+
     public Cultivar createCultivar(CultivarDTO cultivar){
         Cultivar c = new Cultivar();
         c.setEpithet(cultivar.getEpithet());

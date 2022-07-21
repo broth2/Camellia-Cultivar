@@ -2,7 +2,7 @@ package com.camellia.controllers;
 
 import com.camellia.models.requests.CultivarRequestDTO;
 import com.camellia.models.requests.IdentificationRequestDTO;
-import com.camellia.models.requests.ReportRequestDTO;
+import com.camellia.models.requests.ReportRequest;
 import com.camellia.models.specimens.SpecimenDto;
 import com.camellia.models.users.User;
 import com.camellia.services.cultivars.CultivarService;
@@ -62,17 +62,30 @@ public class ModeratorController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
     }
 
-    @DeleteMapping("/report/{id}")
+    @DeleteMapping("/report/refuse/{id}")
     public ResponseEntity<String> deleteReportRequest(@PathVariable(value = "id") long requestId) {
+        System.out.println("deleting report request with id:" + requestId);
         if (checkRole())
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(reportRequestService.deleteReportRequest(requestId));
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
     }
 
+    @DeleteMapping("/report/accept/{id}/{cultivarId}")
+    public ResponseEntity<String> acceptReportRequest(@PathVariable(value = "id") long requestId, @PathVariable(value = "cultivarId") long cultivarId) {
+        System.out.println("accepted report request with id:" + requestId + ", deleting cultivar with id: " + cultivarId);
+        if (checkRole()){
+            reportRequestService.deleteReportRequest(requestId);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(cultivarService.deleteCultivarById(cultivarId));
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+    }
+
     @GetMapping("/report")
-    public ResponseEntity<ReportRequestDTO> getReportRequest() {
-        if (checkRole())
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(reportRequestService.getOneRequest());
+    public ResponseEntity<ReportRequest> getReportRequest() {
+        if (checkRole()){
+            ReportRequest rprtR = reportRequestService.getOneRequest();
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(rprtR);
+        }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
     }
 

@@ -40,13 +40,8 @@ public abstract class Request {
     )
     private long request_id;
 
-    @Column(name = "submission_date", nullable = false)
+    @Column(name = "submission_date", nullable = true)
     private LocalDateTime submissionDate;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn( referencedColumnName = "userId", name="mod_user_id", nullable=true)
-    @JsonIncludeProperties("mod_user_id")
-    private User mod_user;
     
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn( referencedColumnName = "userId", name="reg_user_id", nullable=false)
@@ -79,12 +74,16 @@ public abstract class Request {
         this.regUser = reg_user;
     }
 
-    public long getModId(){
-        return mod_user.getUserId();
-    }
-
     public long getRegId(){
         return regUser.getUserId();
+    }
+
+    public String getFname(){
+        return this.regUser.getFirstName();
+    }
+
+    public String getLname(){
+        return this.regUser.getLastName();
     }
 
 }

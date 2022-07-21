@@ -117,7 +117,7 @@ public class RegisteredUserService {
         
         //mailSender.send(message);
 
-        System.out.println("\n\n\n\nRegistering user..." );
+        System.out.println("\n\n\n\nRegistering user...\n" + verifyURL );
         Email e = new Email(EmailConsts.OUR_EMAIL , toAddress);
         e.setSubject(subject);
         e.setText(content);

@@ -5,8 +5,9 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Column;
 
-import com.camellia.models.specimens.Specimen;
+import com.camellia.models.cultivars.Cultivar;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import lombok.Getter;
@@ -27,18 +28,46 @@ public class ReportRequest extends Request{
     
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn( referencedColumnName = "specimen_id", name="specimen_id", nullable=false)
-    @JsonIncludeProperties("specimen_id")
-    private Specimen to_identify_specimen;
+    @JoinColumn( referencedColumnName = "cultivar_id", name="cultivar_id", nullable=false)
+    @JsonIncludeProperties("cultivar_id")
+    private Cultivar cultivar;
+
+    @Column(name = "report_text")
+    private String reportText;
 
 
-    public Specimen getTo_identify_specimen() {
-        return this.to_identify_specimen;
+    public Cultivar getCultivar() {
+        return this.cultivar;
     }
 
-    public void setTo_identify_specimen(Specimen to_identify_specimen) {
-        this.to_identify_specimen = to_identify_specimen;
+    public void setCultivar(Cultivar cultivar) {
+        this.cultivar = cultivar;
     }
+
+    public String getReportText(){
+        return this.reportText;
+    }
+
+    public void setReportText(String reportText){
+        this.reportText = reportText;
+    }
+
+    public long getCultivarId(){
+        return this.cultivar.getId();
+    }
+
+    public String getCultivarN(){
+        return this.cultivar.toString();
+    }
+
+
+    public String toString(){
+        return "Reported cultivar ID: " + this.cultivar.getId() + "->" + this.cultivar
+        + ", with message: " + this.reportText
+        + ", from user: " + this.getRegUser().getUserId() + ", at " + this.getSubmissionDate();
+    }
+
+
 
 
 }

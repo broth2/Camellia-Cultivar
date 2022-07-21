@@ -1,10 +1,13 @@
 package com.camellia.controllers;
 
+import javax.validation.Valid;
+
 import com.camellia.mappers.IdentificationRequestMapper;
 import com.camellia.mappers.SpecimenMapper;
 import com.camellia.models.requests.IdentificationRequest;
 import com.camellia.models.requests.IdentificationRequestDTO;
 import com.camellia.models.requests.IdentificationRequestView;
+import com.camellia.models.requests.ReportRequestDTO;
 import com.camellia.models.specimens.Specimen;
 import com.camellia.models.specimens.SpecimenDto;
 import com.camellia.models.users.User;
@@ -16,6 +19,7 @@ import twitter4j.TwitterException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,10 +51,10 @@ public class RequestController {
     @Autowired
     SpecimenService specimenService;
 
-    @PostMapping("/report/{id}")
-    public ResponseEntity<Object> createReportRequest(@PathVariable(value="id") long specimenId){
+    @PostMapping(value="/report", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Object> createReportRequest(@Valid @RequestBody ReportRequestDTO report){
         if(checkRoleRegistered()){
-            reportRequestService.createReportRequest(specimenId);
+            reportRequestService.createReportRequest(report);
             return ResponseEntity.status(HttpStatus.CREATED).body("");
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
