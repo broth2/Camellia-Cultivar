@@ -33,7 +33,6 @@ def predict(model, image):
 
 def parseImage(img):
     # formats image to be compatible with the image samples
-    image = Image.open(img)
 
     transform = transforms.Compose([transforms.Resize(255),
                                     transforms.CenterCrop(224),
