@@ -39,6 +39,13 @@ services:
             - ./app/node_modules
         stdin_open: true
         # tty: true
+    
+    flask:
+        build: ./recognition
+        ports:
+            - "5000:5000"
+        volumes:
+            - .:/code
 
 #docker exec -it [container id] bash
 #psql -h localhost -p 5432 -d camellia-cultivar -U camellia -W
