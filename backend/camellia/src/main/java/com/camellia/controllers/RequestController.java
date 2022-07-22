@@ -25,11 +25,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import com.camellia.models.requests.CultivarRequestDTO;
 import com.camellia.services.requests.CultivarRequestService;
 import com.camellia.services.requests.ReportRequestService;
 
+import java.io.IOException;
+import java.net.*;
 import java.util.List;
 
 @RestController
@@ -50,6 +53,9 @@ public class RequestController {
 
     @Autowired
     SpecimenService specimenService;
+
+    @Autowired
+    RestTemplate restTemplate;
 
     @PostMapping(value="/report", consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Object> createReportRequest(@Valid @RequestBody ReportRequestDTO report){
@@ -72,6 +78,7 @@ public class RequestController {
             @RequestBody SpecimenDto specimenDto
     ) throws TwitterException {
         boolean requesterHasAutoApproval;
+        if(!photoRecognition(specimenDto.getPhotoUrl())) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         try {
             requesterHasAutoApproval = userService.requesterHasAutoApproval();
         } catch (UsernameNotFoundException e) {
@@ -105,5 +112,24 @@ public class RequestController {
         User u = userService.getUserByEmail(auth.getName());
 
         return u != null && (u.getRolesList().contains("REGISTERED") || u.getRolesList().contains("MOD") || u.getRolesList().contains("ADMIN"));
+    }
+
+    private boolean photoRecognition(String photo_url){
+        String b_url = "http://192.168.160.226:5000/predict?url=" + photo_url;
+        try {
+            URL url = new URL(b_url);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            int rCode = conn.getResponseCode();
+            // code 201 means absolute certainty of the photo request
+            // code 200 means it could be better
+            if (200 == rCode || 201 == rCode) {
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }

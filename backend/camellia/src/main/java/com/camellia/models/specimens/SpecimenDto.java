@@ -15,6 +15,7 @@ public class SpecimenDto {
     private String garden;
     private Set<CharacteristicValueDTO> characteristicValues;
     private SpecimenType specimenType;
+    private String photoUrl;
 
     public long getSpecimenId() {
         return specimenId;
@@ -70,6 +71,14 @@ public class SpecimenDto {
 
     public void setGarden(String garden) {
         this.garden = garden;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 
     public Set<CharacteristicValueDTO> getCharacteristicValues() {

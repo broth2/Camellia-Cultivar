@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, Response
 import pandas as pd
 import torch
 from torchvision import transforms, models
@@ -21,15 +21,35 @@ model = torch.load("./densenet_model.pth")
 
 
 def predict(model, image):
+    # number 96 is the camellia code
     image = parseImage(image)
     results = {}
+    topResults = []
     image = image.to(device)
     outputs = model(image)
     _, preds = torch.max(outputs.data, 1)
     for o in range(len(outputs[0])):
         results[o] = float(outputs[0][o])
-    print("results: ", results)
-    return results
+    
+    for x in range(5):
+        maxV = max(results, key=results.get)
+        del results[maxV]
+        topResults.append(maxV)
+
+    if 96 in topResults:
+        print("best case scenario")
+        return Response("", status=201, mimetype='application/json')
+
+    for y in range(10):
+        maxV = max(results, key=results.get)
+        del results[maxV]
+        topResults.append(maxV)
+
+    if 96 in topResults:
+        print("acceptable case scenario")
+        return Response("", status=200, mimetype='application/json')
+
+    return Response("", status=406, mimetype='application/json')
 
 def parseImage(img):
     # formats image to be compatible with the image samples

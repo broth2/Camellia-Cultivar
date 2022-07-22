@@ -7,9 +7,12 @@
 **Admin Login:** nunoadmin@ua.pt:batman123  
 **User Login:**  nunofahla@ua.pt:batman123
 
-Webapp available on *http://localhost:3000*  
-Backend API availble on *https://localhost:8085*  
+Webapp available on *http://192.168.160.226:3000*  
+Backend API availble on *https://192.168.160.226:8085* 
+Flask API GET endpoint *http://192.168.160.226:5000/predict?url=*
 Twitter page *https://twitter.com/onthisdayalbum*
+
+If running locally, replace *192.168.160.226* with *localhost* on **RequestControlller.java** and **proxy.js**
 
 ## Changes made
 - Reputation algorithm improvements
@@ -18,6 +21,8 @@ Twitter page *https://twitter.com/onthisdayalbum*
 - Twitter bot for camellia confirmation and milestone accomplishments
 - Camellias can now be reported to admins/mods, in case the system misidentifies them
 - Admins/mods can refuse or accept the report request, removing the request or both the request and the camellia, respectively
+- Camellia Recognition System to filter photographs
+- Fully deployed to a **DETI**'s vm on *http://192.168.160.226:3000/*
 - Both backend and frontend are in docker containers
 - Set the docker-compose HTTP request timeout to a higher value
 - *Reference* quiz answers are processed before *To Identify* quiz answers
@@ -32,3 +37,4 @@ Twitter page *https://twitter.com/onthisdayalbum*
 - Report Request and Report Request DTO classes created
 - Created an endpoint to delete cultivars
 - API container now always restarts if it fails to connect to DB(in case it boots before it)
+- SpecimenDTO class now has an image url attribute
