@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/moderator")
+@CrossOrigin
 public class ModeratorController {
 
     @Autowired
@@ -62,7 +63,7 @@ public class ModeratorController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
     }
 
-    @DeleteMapping("/report/refuse/{id}")
+    @GetMapping("/report/refuse/{id}")
     public ResponseEntity<String> deleteReportRequest(@PathVariable(value = "id") long requestId) {
         System.out.println("deleting report request with id:" + requestId);
         if (checkRole())
@@ -70,7 +71,7 @@ public class ModeratorController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
     }
 
-    @DeleteMapping("/report/accept/{id}/{cultivarId}")
+    @GetMapping("/report/accept/{id}/{cultivarId}")
     public ResponseEntity<String> acceptReportRequest(@PathVariable(value = "id") long requestId, @PathVariable(value = "cultivarId") long cultivarId) {
         System.out.println("accepted report request with id:" + requestId + ", deleting cultivar with id: " + cultivarId);
         if (checkRole()){

@@ -210,9 +210,10 @@ const Moderation = () => {
             }
             console.log(rId+":"+rCid);
             console.log(options.headers);
-            axios.delete(`${proxy}/api/moderator/report/accept/${rId}/${rCid}`, options)
+            axios.get(`${proxy}/api/moderator/report/accept/${rId}/${rCid}`, options)
                 .then(() => {
                     console.log("accepted report request(deleted report and cultivar)");
+                    window.location.reload(false);
                 })
                 .catch(_err => {
                     console.log(_err);
@@ -230,9 +231,10 @@ const Moderation = () => {
                 }
             }
             console.log(rId);
-            axios.delete(`${proxy}/api/moderator/report/refuse/${rId}`, options)
+            axios.get(`${proxy}/api/moderator/report/refuse/${rId}`, options)
                 .then(() => {
                     console.log("deleted report request(refused)");
+                    window.location.reload(false);
                 })
                 .catch(_err => {
                     console.log(_err);
